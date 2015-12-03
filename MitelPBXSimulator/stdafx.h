@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/poll.h>
 
 #define x__read(handle,buffer,size) read(handle,buffer,size)
 #define x__write(handle,buffer,size) write(handle,buffer,size)
@@ -49,6 +50,8 @@
 #include "Lock.h"
 
 #define synchronized(M)  for(Lock M##_lock = M; M##_lock; M##_lock.setUnlock())
+
+void start();
 
 // Utilities
 #include "Utils.h"

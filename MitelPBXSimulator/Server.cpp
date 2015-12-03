@@ -2,6 +2,15 @@
 
 namespace OAI_Networking
 {
+	Server::Server()
+	{
+	}
+
+	Server::~Server()
+	{
+
+	}
+
 	int Server::InitWSA()
 	{
 		// Windows Sockets API cheese
@@ -73,32 +82,37 @@ namespace OAI_Networking
 			return INIT_LISTEN_ERROR;
 		}
 
-		// Initialise the incoming connections listening thread
-		std::thread m_Running(&Server::Run, this);
-
 		return CONNECT_SUCCESSFUL;
 	}
 
 	void Server::Run()
 	{
-		this->m_ClientLength = sizeof(this->m_ClientAddr);
+		int client;
+		struct sockaddr_in clientAddr;
+
+		int clientLength = sizeof(clientAddr);
 
 		for (;;){
 
 			OAI_Common::Console("Waiting for connection");
 
-			this->m_Client = accept(this->m_Socket, (struct sockaddr *)
-				&m_ClientAddr, &this->m_ClientLength);
+			client = accept(this->m_Socket, (struct sockaddr *)
+				&clientAddr, &clientLength);
 
-			if (0 > this->m_Client) {
+			if (0 > client) {
 				this->Error("accept");
-			}
-			else {
-				new Client(this->m_Client);
+			} else {
+				std::thread cli(&Server::Accepted, client);
+				cli.detach();
 			}
 		}
 
 		x__close(this->m_Socket);
+	}
+
+	void Server::Accepted(int client)
+	{
+		Client cli(client);
 	}
 
 	void Server::Error(std::string error)

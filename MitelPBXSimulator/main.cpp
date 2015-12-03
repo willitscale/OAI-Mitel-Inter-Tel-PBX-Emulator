@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
-int main() {
+using namespace OAI_Networking;
 
-	// Boot up the server
-	new OAI_Networking::Server();
+int main() {
+	// Initialise the incoming connections listening thread
+	std::thread m_Running(start);
 
 	// Let this process run indefinately
 	for (;;) {
@@ -16,4 +17,16 @@ int main() {
 	// TODO: TERMINATE ALL THREADS
 
 	return 0;
+}
+
+void start()
+{
+	// Boot up the server
+	Server instance;
+	
+	// Hope all works >.<
+	if (Server::CONNECT_SUCCESSFUL == instance.Connect())
+	{
+		instance.Run();
+	}
 }

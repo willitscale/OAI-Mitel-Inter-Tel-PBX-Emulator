@@ -10,16 +10,9 @@ namespace OAI_Networking
 
 		int Connect();
 		bool Connected();
-
 		void Run();
 
-		void Error(std::string error);
-
-		int InitWSA();
-		int InitSocket();
-		int InitNonBlocking();
-		int InitBind();
-		int InitListen();
+		void static Accepted(int client);
 
 		const static int BUFFER_SIZE = 1024;
 
@@ -34,13 +27,19 @@ namespace OAI_Networking
 		bool m_Connected = false;
 		int m_Port = 4001;
 		int m_Socket;
-		int m_Client;
 		int m_Pending = 5;
-		int m_ClientLength;
 
 		u_long m_Mode = 0;
 
 		struct sockaddr_in m_Server;
-		struct sockaddr_in m_ClientAddr;
+
+		int InitWSA();
+		int InitSocket();
+		int InitNonBlocking();
+		int InitBind();
+		int InitListen();
+
+		void Error(std::string error);
+
 	};
 }

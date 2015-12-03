@@ -4,7 +4,8 @@ namespace OAI_Networking
 {
 	Client::Client(int client) : m_Socket(client)
 	{
-
+		this->m_Socket = client;
+		this->Run();
 	}
 
 	Client::~Client()
@@ -12,16 +13,38 @@ namespace OAI_Networking
 		x__close(m_Socket);
 	}
 
-	void Client::run()
+	void Client::Run()
 	{
+		struct timeval tv;
+		fd_set readfds;
+		int state;
+
+		// clear the set ahead of time
+		FD_ZERO(&readfds);
+
+		// add our descriptors to the set
+		FD_SET(m_Socket, &readfds);
+
+		tv.tv_usec = 10000;
+
 		for (;;) {
-			// Read all the data before we start writing
-			this->read();
-			this->write("test");
+
+			// wait for events on the sockets, .01 second timeout
+			state = select(m_Socket+1, &readfds, NULL, NULL, &tv);
+
+			if (state == -1) {
+				
+			} else if (state == 0) {
+				this->Write("test");
+			} else {
+				// Read all the data before we start writing
+				this->Read();
+			}
+
 		}
 	}
 
-	int Client::read()
+	int Client::Read()
 	{
 		int bytes = 0;
 
@@ -33,13 +56,13 @@ namespace OAI_Networking
 		// there could be more to read
 		if (BUFFER_SIZE == bytes)
 		{
-			return bytes + this->read();
+			return bytes + this->Read();
 		}
 
 		return bytes;
 	}
 
-	int Client::write(std::string message)
+	int Client::Write(std::string message)
 	{
 		int bytes = 0, offset = 0, length = 0, maxLength = message.length();
 

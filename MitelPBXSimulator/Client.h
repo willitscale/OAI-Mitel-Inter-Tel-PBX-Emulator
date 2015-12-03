@@ -14,8 +14,8 @@ namespace OAI_Networking
 		int m_Socket;
 		char m_Buffer[BUFFER_SIZE];
 
-		void run();
-		int read();
-		int write(std::string message);
+		void Run();
+		int Read();
+		int Write(std::string message);
 	};
 }
